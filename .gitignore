@@ -1,3 +1,7 @@
 /test_images/inception.mp4
 /output/inception_shortened_output.mp4
 /output/images.zip
+
+/wwzd_env/
+/web_app/*.sqlite3
+/web_app/web_app/__pycache__/
