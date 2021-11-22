@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -22,6 +22,7 @@ from wwzd_app.views import upload_video, model_form_upload
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('chart/', include('chart.urls', namespace='chart')),
     path("upload/", upload_video, name="upload"),
     path("upload_form/", model_form_upload, name="upload_form"),
 ]

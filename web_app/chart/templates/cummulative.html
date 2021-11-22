@@ -1,0 +1,42 @@
+{% load sekizai_tags i18n static %}
+<div id="wid{{instance.id}}" class="sparkline"><canvas></canvas><svg></svg></div>
+{% addtoblock 'js' %}
+{# Include d3 and nvd3 #}
+<script src="{% static 'js/d3.min.js' %}"></script>
+<script src="{% static 'js/nv.d3.min.js' %}"></script>
+{% endaddtoblock %}
+{% addtoblock 'js' %}
+<script>
+d3.json('{{instance.chartsource}}', function(data) {
+  nv.addGraph(function() {
+    var chart = nv.models.cumulativeLineChart()
+                  .x(function(d) { return d[0] })
+                  .y(function(d) { return d[1]/100 }) //adjusting, 100% is 1.00, not 100 as it is in the data
+                  .color(d3.scale.category10().range())
+                  .useInteractiveGuideline(true)
+                  ;
+
+     chart.xAxis
+        .tickValues({{instance.tick_values}})
+        .tickFormat(function(d) {
+            return d3.time.format('%x')(new Date(d))
+          });
+
+    chart.yAxis
+        .tickFormat(d3.format(',.1%'));
+
+    d3.select('#wid{{instance.id}} svg')
+        .datum(data)
+        .call(chart);
+
+    //TODO: Figure out a good way to do this automatically
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+});
+</script>
+{% endaddtoblock %}
+{% addtoblock 'css' %}
+<link href="{% static 'css/nv.d3.min.css' %}" rel="stylesheet">
+{% endaddtoblock %}
