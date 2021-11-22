@@ -4,4 +4,12 @@
 
 /wwzd_env/
 /web_app/*.sqlite3
-/web_app/web_app/__pycache__/
+/web_app/web_app/__pycache__
+
+/venv/
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
