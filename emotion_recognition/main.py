@@ -28,6 +28,19 @@ def emotions_from_video(video):
     return df
 
 
+def load_video_then_analise(path):
+    """
+
+    :param path:
+    :return:
+    """
+    video_file = Video(path)
+
+    captured_emotions = emotions_from_video(video_file)
+
+    return captured_emotions
+
+
 def test_emotions_extraction():
     test_image_one = plt.imread("./test_images/polska.jpg")
 
@@ -48,4 +61,4 @@ def test_emotions_video_extraction():
     print(captured_emotions)
 
 
-test_emotions_video_extraction()
+# test_emotions_video_extraction()
