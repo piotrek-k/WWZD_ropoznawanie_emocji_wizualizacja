@@ -1,21 +1,48 @@
+import os.path
+from pathlib import Path
+
 from django.shortcuts import render, redirect
 from .forms import VideoForm
 from .models import Videos
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from emotion_recognition.main import load_video_then_analise
+from emotion_recognition.main import load_video_then_analise, sha256sum, generate_sha
 
 
 def upload_video(request):
     if request.method == "POST" and request.FILES["myfile"]:
         myfile = request.FILES["myfile"]
         fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = "./" + fs.url(filename)
 
-        emotions = load_video_then_analise(uploaded_file_url).to_json()
+        checksum = generate_sha(request.FILES["myfile"])
+        print("checksum of file:", checksum)
 
-        return render(request, "upload.html", {"uploaded_file_url": uploaded_file_url, "data": emotions})
+        emotions = ""
+
+        possible_cache_file = Path("./media/" + checksum + ".cache")
+        if not possible_cache_file.is_file():
+            # taki film nie był wcześniej wgrywany, rozpocznij analizę
+
+            extension = os.path.splitext(myfile.name)
+
+            filename = fs.save(checksum + extension[1], myfile)
+            uploaded_file_path = "./" + fs.url(filename)
+
+            print(uploaded_file_path)
+
+            emotions = load_video_then_analise(uploaded_file_path).to_json()
+
+            with open("./media/" + checksum + ".cache", "w") as text_file:
+                text_file.write(emotions)
+
+        else:
+            # plik był wcześniej analizowany, zwróć cache
+
+            with open("./media/" + checksum + ".cache", "r") as text_file:
+                emotions = str(text_file.read())
+
+        return render(request, "upload.html", {"data": emotions})
+
     return render(request, "upload.html")
 
 

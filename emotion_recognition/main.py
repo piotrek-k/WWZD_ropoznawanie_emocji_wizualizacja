@@ -1,6 +1,7 @@
 from fer import FER
 from fer import Video
 import matplotlib.pyplot as plt
+import hashlib
 
 
 def emotions_from_image(image):
@@ -22,7 +23,7 @@ def emotions_from_video(video):
     :return:
     """
     detector = FER(mtcnn=True)
-    raw_data = video.analyze(detector, save_frames=False, save_video=False)
+    raw_data = video.analyze(detector, output="csv", save_frames=False, save_video=False, annotate_frames=False)
     df = video.to_pandas(raw_data)
 
     return df
@@ -60,5 +61,33 @@ def test_emotions_video_extraction():
 
     print(captured_emotions)
 
+
+def generate_sha(file):
+    sha = hashlib.sha1()
+    file.seek(0)
+    while True:
+        buf = file.read(104857600)
+        if not buf:
+            break
+        sha.update(buf)
+    sha1 = sha.hexdigest()
+    file.seek(0)
+
+    return sha1
+
+
+def sha256sum(filename):
+    """
+    Zwraca hash pliku. Przydatne do cache'owania
+    :param filename:
+    :return:
+    """
+    h = hashlib.sha256()
+    b = bytearray(128 * 1024)
+    mv = memoryview(b)
+    with open(filename, 'rb', buffering=0) as f:
+        for n in iter(lambda: f.readinto(mv), 0):
+            h.update(mv[:n])
+    return h.hexdigest()
 
 # test_emotions_video_extraction()
