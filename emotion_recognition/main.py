@@ -37,15 +37,17 @@ def test_emotions_extraction():
     plt.imshow(test_image_one)
 
 
-def test_emotions_video_extraction():
-    path = "./test_images/inception_shortened.mp4"
-    print("Przetwarzanie filmu %s", path)
+def test_emotions_video_extraction(path):
+    # path = "./test_images/inception_shortened.mp4"
+    _path = "././" + path
+    print("Przetwarzanie filmu %s", _path)
 
-    test_video = Video(path)
+    test_video = Video(_path)
 
     captured_emotions = emotions_from_video(test_video)
 
     print(captured_emotions)
+    return captured_emotions
 
 
-test_emotions_video_extraction()
+# test_emotions_video_extraction()
