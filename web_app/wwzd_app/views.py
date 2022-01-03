@@ -1,3 +1,6 @@
+import os.path
+from pathlib import Path
+
 from django.shortcuts import render, redirect
 from .forms import VideoForm
 from .models import Videos, AnalysisResult
