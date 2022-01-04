@@ -2,18 +2,71 @@
 {% block content%}
 
 
-<div class="row justify-content-center mt-5">
+<div class="container">
 
-    <h1> Found {{videos_count}} video(s) </h1>
+    <div class="page-header">
+        <h1>Found {{videos_count}} video(s)</h1>
+    </div>
+
+    <!-- Video Gallery - START -->
+    <div class="container-fluid pb-video-container">
+        <div class="col-md-10 col-md-offset-1">
+            <h3 class="text-center">Videos for analysis:</h3>
+            <div class="row pb-row">
+                {% for video in not_analyzed_videos %}
+                <div class="col-md-3 pb-video">
+                    <video width="100%" height="230" controls>
+                        <source src="{{video.video.url}}" type="video/mp4">
+                    </video>
+                    <label class="form-control label-warning text-center">{{video.title}}</label>
+                    <a class="btn btn-primary d-flex flex-column" href="{% url 'analyze_video' video.id %}">Analyze</a>
+                </div>
+                {% endfor %}
+            </div>
+            <h3 class="text-center">Videos analyzed</h3>
+            <div class="row pb-row">
+                {% for video in analyzed_videos %}
+                <div class="col-md-3 pb-video">
+                    <video width="100%" height="230" controls>
+                        <source src="{{video.video.video.url}}" type="video/mp4">
+                    </video>
+                    <label class="form-control label-warning text-center">{{video.video.title}}</label>
+                    <a class="btn btn-primary d-flex flex-column" href="{% url 'chart:cumulative_chart' %}">Results</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .pb-video-container {
+            padding-top: 20px;
+            background: #bdc3c7;
+            font-family: Lato;
+        }
+
+        .pb-video {
+            border: 1px solid #e6e6e6;
+            padding: 5px;
+        }
+
+        .pb-video:hover {
+            background: #2c3e50;
+        }
+
+        .pb-video-frame {
+            transition: width 2s, height 2s;
+        }
+
+        .pb-video-frame:hover {
+            height: 300px;
+        }
+
+        .pb-row {
+            margin-bottom: 10px;
+        }
+    </style>
 
 </div>
-{% for video in videos %}
-<video width="500" height="500" controls>
-    <source src="{{video.video.url}}" type="video/mp4">
-    <b>{{video.title}}</b>
-</video>
-
-<a class="btn btn-primary" href="{% url 'analyze_video' video.id %}">Analyze</a>
-{% endfor %}
 
 {% endblock %}

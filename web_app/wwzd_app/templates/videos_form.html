@@ -1,9 +1,11 @@
+{% extends 'home.html' %}
 {% block content %}
-<form method="post" enctype="multipart/form-data">
+<form class="col-lg-6 pt-2 offset-lg-3 " method="post" enctype="multipart/form-data">
+    <div class="row justify-content-center"></div>
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" onclick="location.href='/'">>Upload</button>
+    </div>
 </form>
-
 
 {% endblock %}

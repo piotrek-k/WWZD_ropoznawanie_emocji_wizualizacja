@@ -1,5 +1,6 @@
 import os.path
 from pathlib import Path
+from django.db.models.expressions import Exists, OuterRef
 
 from django.shortcuts import render, redirect
 from .forms import VideoForm
@@ -35,11 +36,15 @@ def model_form_upload(request):
 
 
 def videos(request):
-    videos = Videos.objects.all()
+    # videos not analyzed (left join)
+    not_analyzed_videos = Videos.objects.filter(analysisresult__isnull=True)
     videos_count = Videos.objects.count()
+    # videos analyzed (join)
+    analyzed_videos = AnalysisResult.objects.select_related("video")
     context = {
-        "videos": videos,
+        "not_analyzed_videos": not_analyzed_videos,
         "videos_count": videos_count,
+        "analyzed_videos": analyzed_videos,
     }
     return render(request, "videos.html", context=context)
 
@@ -50,6 +55,11 @@ def home(request):
 
 
 def analyze_video(request, id):
+
+    was_analyzed = AnalysisResult.objects.get(video=id)
+    print(was_analyzed)
+    if was_analyzed is not None:
+        print("test")
     v = Videos.objects.get(id=id)
     print(v.video.url)
     result = test_emotions_video_extraction(v.video.url)
