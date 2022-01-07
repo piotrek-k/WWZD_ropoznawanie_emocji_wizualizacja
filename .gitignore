@@ -4,9 +4,11 @@
 
 /wwzd_env/
 /web_app/*.sqlite3
+/web_app/*.csv
 /web_app/web_app/__pycache__
 /web_app/chart/__pycache__/
 /web_app/chart/migrations/
+/web_app/wwzd_app/migrations/
 
 /venv/
 *.log

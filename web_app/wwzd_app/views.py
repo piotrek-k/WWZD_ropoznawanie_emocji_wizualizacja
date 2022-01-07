@@ -55,8 +55,10 @@ def home(request):
 
 
 def analyze_video(request, id):
-
-    was_analyzed = AnalysisResult.objects.get(video=id)
+    try:
+        was_analyzed = AnalysisResult.objects.get(video=id)
+    except AnalysisResult.DoesNotExist:
+        was_analyzed = None
     print(was_analyzed)
     if was_analyzed is not None:
         print("test")
