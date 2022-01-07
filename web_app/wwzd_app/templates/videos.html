@@ -31,7 +31,7 @@
                         <source src="{{video.video.video.url}}" type="video/mp4">
                     </video>
                     <label class="form-control label-warning text-center">{{video.video.title}}</label>
-                    <a class="btn btn-primary d-flex flex-column" href="{% url 'chart:cumulative_chart' %}">Results</a>
+                    <a class="btn btn-primary d-flex flex-column" href="{% url 'chart:display_chart' video.video.id %}">Results</a>
                 </div>
                 {% endfor %}
             </div>

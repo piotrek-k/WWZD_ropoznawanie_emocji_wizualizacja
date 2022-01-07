@@ -18,4 +18,6 @@ class Videos(models.Model):
 
 class AnalysisResult(models.Model):
     video = models.OneToOneField(Videos, on_delete=CASCADE, primary_key=True)
-    result = models.TextField()
+    # result = models.TextField()
+    result = models.JSONField()
+
