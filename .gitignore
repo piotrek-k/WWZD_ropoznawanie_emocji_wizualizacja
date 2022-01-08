@@ -8,6 +8,8 @@
 /web_app/web_app/__pycache__
 /web_app/chart/__pycache__/
 /web_app/chart/migrations/
+/web_app/chart/static/*.csv
+/web_app/chart/static/*.tsv
 /web_app/wwzd_app/migrations/
 
 /venv/

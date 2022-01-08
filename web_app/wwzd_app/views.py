@@ -64,6 +64,6 @@ def analyze_video(request, id):
         print("test")
     v = Videos.objects.get(id=id)
     print(v.video.url)
-    result = test_emotions_video_extraction(v.video.url).to_json()
+    result = test_emotions_video_extraction(v.video.url)
     analyzed_video = AnalysisResult.objects.create(video=v, result=result)
     return redirect("/")
