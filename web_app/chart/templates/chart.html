@@ -1,5 +1,7 @@
+{% extends 'home.html' %}
 {% load static %}
 
+{% block content%}
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
@@ -22,43 +24,25 @@
     <div id="pie_chart"></div>
 
     <script>
-        // Commented version of
-        // https://bl.ocks.org/mbostock/3884955
-
-        // Variables
         var svg = d3.select("svg"),
             margin = {top: 20, right: 80, bottom: 30, left: 50},
             width = svg.attr("width") - margin.left - margin.right,
             height = svg.attr("height") - margin.top - margin.bottom;
 
-
-        // SVG G to provide D3 Margin Convention
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // Scale X - time scale
-        // Scale Y - linear scale
-        // Scale Z - color categorical scale
         var x = d3.scaleLinear().range([0, width]),
             y = d3.scaleLinear().range([height, 0]),
             z = d3.scaleOrdinal(d3.schemeCategory10);
 
-        // D3 Line generator with curveBasis being the interpolator
         var line = d3.line()
             .curve(d3.curveBasis)
             .x(function(d) { return x(d.frame); })
             .y(function(d) { return y(d.emotion_amount); });
 
-        // TSV AJAX call
-        // type function does the data pre-processing
         d3.csv("/static/{{ emotions_filename }}", function(error, data) {
           if (error) throw error;
 
-          // Construct new data structure
-          // array of arrays
-          // 1st level of arrays are based on City
-          //   - so 3 arrays at this level
-          // 2nd level of arrays are based on date and temp for each city
-          //   - so 366 arrays at this level per city
           var emotions = data.columns.slice(1).map(function(id) {
             return {
               id: id,
@@ -67,26 +51,17 @@
               })
             };
           });
-          // Using the initial data figure out the min / max dates
+
           x.domain([
             0, data.length 
-            //d3.max(emotions, function(c) { return d3.max(c.values, function(d){ return d.frame; }); })
           ]);
 
-          // Using the constructed cities data figure out the min / max temperatures
-          // Note the nested d3.min's
-          //   - for each city figure out the min temp
-          //   - then figure out the min temp from the city's min temp
-          // Note the nested d3.max's
-          //   - for each city figure out the max temp
-          //   - then figure out the max temp from the city's max temp
+
           y.domain([
             d3.min(emotions, function(c) { return d3.min(c.values, function(d) { return d.emotion_amount; }); }), 
             1
           ]);
 
-          // Using the constructed cities data get the domain from the City id
-          // We get ["New York", "San Francisco", "Austin"]
           z.domain(emotions.map(function(c) { return c.id; }));
 
           // Create X Axis
@@ -107,15 +82,12 @@
               .attr("fill", "#000")
               .text("emotion scale");
 
-          // Create a <g> element for each city
-          // Note that 3 1st level arrays, so we get 3 g's
+          // Create a <g> element for each emotion
           var emotion = g.selectAll(".emotion")
             .data(emotions)
             .enter().append("g")
               .attr("class", "emotion");
 
-          // Create a <path> element inside of each city <g>
-          // Use line generator function to convert 366 data points into SVG path string
           emotion.append("path")
               .attr("class", "line")
               .attr("d", function(d) {
@@ -123,11 +95,6 @@
                 return line(values); })
               .style("stroke", function(d) { return z(d.id); });
 
-          // Append text to each city's <g>
-          // Data join using function to access and create a new data structure based on inherited data structure
-          // Note:
-          //   - d.values[d.values.length gives us the last element of the 366 element array
-          // This helps us to figure out how to correctly place city line text labels
           emotion.append("text")
               .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
               .attr("transform", function(d) {
@@ -144,10 +111,8 @@
       height = 450
       margin = 40
 
-      // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
       var radius = Math.min(width, height) / 2 - margin
 
-      // append the svg object to the div called 'my_dataviz'
       var svg = d3.select("#pie_chart")
         .append("svg")
           .attr("width", width)
@@ -156,21 +121,16 @@
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
       d3.csv("/static/{{ pie_chart_filename }}", function(data) {
-        var emotions = data.map(function(d) {
-                return {angry: d.angry, disgust: d.disgust, fear: d.fear, happy: d.happy,
-                        sad: d.sad, surprise: d.surprise, neutral: d.neutral};
-              }
-              );
+        console.log(data[0])
 
         var color = d3.scaleOrdinal()
-                      .domain(emotions)
+                      .domain(data[0])
                       .range(d3.schemeSet2)
         
         var pie = d3.pie()
                     .value(function(d) {return d.value; })
 
-        console.log(emotions)
-        var data_ready = pie(d3.entries(emotions[0]))
+        var data_ready = pie(d3.entries(data[0]))
 
         var arcGenerator = d3.arc()
                              .innerRadius(0)
@@ -186,7 +146,6 @@
            .style("stroke-width", "2px")
            .style("opacity", 0.7)
 
-        console.log(data_ready)
 
         svg.selectAll('mySlices')
            .data(data_ready)
@@ -199,3 +158,5 @@
           })
     </script>
 </html>
+
+{% endblock %}
