@@ -1,5 +1,7 @@
 from fer import FER
-from fer import Video
+from pandas import DataFrame
+
+from custom_FER.customized_fer_video import CustomizedVideo
 import matplotlib.pyplot as plt
 import hashlib
 
@@ -30,7 +32,9 @@ def emotions_from_video(video):
         save_video=False,
         annotate_frames=False,
     )
-    df = video.to_pandas(raw_data)
+    # df = video.to_pandas(raw_data)
+    df = DataFrame(raw_data)
+    df.to_csv(path_or_buf="emotions.csv", index=False)
 
     return df
 
@@ -62,7 +66,7 @@ def test_emotions_video_extraction(path):
     _path = "././" + path
     print("Przetwarzanie filmu %s", _path)
 
-    test_video = Video(_path)
+    test_video = CustomizedVideo(_path)
 
     captured_emotions = emotions_from_video(test_video)
 
@@ -99,4 +103,4 @@ def sha256sum(filename):
     return h.hexdigest()
 
 
-# test_emotions_video_extraction()
+# test_emotions_video_extraction("./test_images/inception_shortened.mp4")
