@@ -1,7 +1,9 @@
+import csv
 import os
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
+import re
 from zipfile import ZipFile
 
 import cv2
@@ -195,6 +197,9 @@ class CustomizedVideo(Video):
 
             frameCount += 1
 
+            # if frameCount > 40:
+            #    break
+
             if faces:
                 data.append(faces)
             if max_results and results_nr > max_results:
@@ -228,4 +233,57 @@ class CustomizedVideo(Video):
                     if i % 50 == 0: log.info(f"Compressing: {i * 100 // total}%")
             log.info("Zip has finished")
 
-        return data
+        if output == "csv":
+            return self.to_csv(data)
+        elif output == "pandas":
+            return self.to_pandas(data)
+        elif output == "json":
+            return data
+        else:
+            raise NotImplementedError(f"{output} is not supported")
+
+    @staticmethod
+    def _to_dict(data: Union[dict, list]) -> dict:
+        emotions = []
+
+        frame = data[0]
+        if isinstance(frame, list):
+            try:
+                emotions = frame[0]["emotions"].keys()
+            except IndexError:
+                raise Exception("No data in 'data'")
+        elif isinstance(frame, dict):
+            return data
+
+        dictlist = []
+
+        for data_idx, frame in enumerate(data):
+            rowdict = {}
+            for idx, face in enumerate(list(frame)):
+                if not isinstance(face, dict):
+                    break
+                rowdict.update({"box" + str(idx): face["box"]})
+                rowdict.update(
+                    {emo + str(idx): face["emotions"][emo] for emo in emotions}
+                )
+                rowdict.update({"frame" + str(idx): face["frame"]})
+            dictlist.append(rowdict)
+        return dictlist
+
+    def to_csv(self, data, filename="data.csv"):
+        """Save data to csv"""
+
+        def key(item):
+            key_pat = re.compile(r"^(\D+)(\d+)$")
+            m = key_pat.match(item)
+            return m.group(1), int(m.group(2))
+
+        dictlist = self._to_dict(data)
+        columns = set().union(*(d.keys() for d in dictlist))
+        columns = sorted(columns, key=key)  # sort by trailing number (faces)
+
+        with open("data.csv", "w", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, columns, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(dictlist)
+        return dictlist
