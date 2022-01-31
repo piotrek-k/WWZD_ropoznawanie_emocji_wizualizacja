@@ -94,7 +94,9 @@ def display_chart(request, id):
 
   ec_df.rename(columns = {'frame0':'frame', 'angry0':'angry','disgust0':'disgust','fear0':'fear', 'happy0':'happy',
                               'sad0':'sad', 'surprise0':'surprise','neutral0':'neutral',}, inplace = True)
-                              
+  pc_df.rename(columns = {'frame0':'frame', 'angry0':'angry','disgust0':'disgust','fear0':'fear', 'happy0':'happy',
+                              'sad0':'sad', 'surprise0':'surprise','neutral0':'neutral',}, inplace = True)
+
   emotions_filename = f'{video_id}_{title}_emotions_chart.csv'
   emotions_filepath = os.path.join(settings.BASE_DIR, 'chart/static/', emotions_filename)
   ec_df.to_csv(emotions_filepath, index=False)
