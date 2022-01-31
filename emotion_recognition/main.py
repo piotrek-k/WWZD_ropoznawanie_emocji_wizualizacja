@@ -1,7 +1,7 @@
 from fer import FER
 from pandas import DataFrame
 
-from custom_FER.customized_fer_video import CustomizedVideo
+from .custom_FER.customized_fer_video import CustomizedVideo
 import matplotlib.pyplot as plt
 import hashlib
 
