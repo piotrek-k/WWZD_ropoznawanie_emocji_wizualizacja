@@ -29,8 +29,10 @@ def display_chart(request, id):
 
   ec_df = ec_df.sort_values("frame0", ascending = True)
 
-  ec_df.drop('box0', inplace=True, axis=1)
-  ec_df.drop('box1', inplace=True, axis=1)
+  for column in ec_df.columns:
+    if column.startswith("box"):
+      ec_df.drop(column, inplace=True, axis=1)
+
   ec_df.drop('result_number', inplace=True, axis=1)
   for column in ec_df.columns:
     if column != "frame0" and column.startswith("frame"):
